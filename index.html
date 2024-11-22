@@ -77,172 +77,23 @@
 
         function drawObstacles() {
             ctx.fillStyle = "#008000";
-            obstacles.forEach((obstacle, index) => {
+            obstacles.forEach((obstacle) => {
                 ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacle.height);
-                if (obstacle.x + obstacleWidth < 0) {
-                    obstacles.splice(index, 1);
-                    score++;
-                }
             });
         }
 
         function moveObstacles() {
-            obstacles.forEach(obstacle => {
-                obstacle.x -= 2; // 障礙物移動速度
-            });
-        }
-
-        function generateObstacles() {
-            if (Math.random() < 0.02) {
-                const height = Math.floor(Math.random() * (canvas.height - obstacleGap));
-                obstacles.push({
-                    x: canvas.width,
-                    y: 0,
-                    height: height
-                });
-                obstacles.push({
-                    x: canvas.width,
-                    y: height + obstacleGap,
-                    height: canvas.height - height - obstacleGap
-                });
-            }
-        }
-
-        function detectCollisions() {
-            for (let obstacle of obstacles) {
-                if (plane.x + plane.width > obstacle.x && plane.x < obstacle.x + obstacleWidth) {
-                    if (plane.y < obstacle.y + obstacle.height && plane.y + plane.height > obstacle.y) {
-                        gameOver = true;
-                    }
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].x -= 2; // 障礙物移動速度
+                if (obstacles[i].x + obstacleWidth < 0) {
+                    obstacles.splice(i, 1);
+                    score++; // 成功通過障礙物，得分
                 }
             }
         }
 
-        function update() {
-            if (gameOver) {
-                ctx.font = "48px sans-serif";
-                ctx.fillStyle = "black";
-                ctx.fillText("遊戲結束!", canvas.width / 2 - 120, canvas.height / 2);
-                return;
-            }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            plane.y += plane.dy;
-            if (plane.y < 0) plane.y = 0;
-            if (plane.y + plane.height > canvas.height) plane.y = canvas.height - plane.height;
-
-            drawPlane();
-            generateObstacles();
-            moveObstacles();
-            drawObstacles();
-            detectCollisions();
-
-            scoreDisplay.textContent = `分數: ${score}`;
-
-            requestAnimationFrame(update);
-        }
-
-        update();
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>飛機遊戲</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #87CEEB;
-        }
-        #gameCanvas {
-            display: block;
-            margin: 0 auto;
-            background-color: #B0E0E6;
-            border: 2px solid #000;
-        }
-        .score {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-size: 24px;
-            color: #000;
-        }
-    </style>
-</head>
-<body>
-    <canvas id="gameCanvas"></canvas>
-    <div class="score">分數: 0</div>
-
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const scoreDisplay = document.querySelector(".score");
-        
-        canvas.width = 800;
-        canvas.height = 600;
-
-        let gameOver = false;
-        let score = 0;
-
-        // 飛機物件
-        const plane = {
-            x: 50,
-            y: canvas.height / 2 - 30,
-            width: 50,
-            height: 50,
-            speed: 5,
-            dy: 0
-        };
-
-        // 障礙物物件
-        const obstacles = [];
-        const obstacleWidth = 60;
-        const obstacleGap = 200;
-
-        // 控制鍵盤
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowUp") {
-                plane.dy = -plane.speed;
-            } else if (e.key === "ArrowDown") {
-                plane.dy = plane.speed;
-            }
-        });
-
-        document.addEventListener("keyup", (e) => {
-            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                plane.dy = 0;
-            }
-        });
-
-        function drawPlane() {
-            ctx.fillStyle = "#ff0000";
-            ctx.fillRect(plane.x, plane.y, plane.width, plane.height);
-        }
-
-        function drawObstacles() {
-            ctx.fillStyle = "#008000";
-            obstacles.forEach((obstacle, index) => {
-                ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacle.height);
-                if (obstacle.x + obstacleWidth < 0) {
-                    obstacles.splice(index, 1);
-                    score++;
-                }
-            });
-        }
-
-        function moveObstacles() {
-            obstacles.forEach(obstacle => {
-                obstacle.x -= 2; // 障礙物移動速度
-            });
-        }
-
         function generateObstacles() {
-            if (Math.random() < 0.02) {
+            if (Math.random() < 0.02) { // 控制障礙物生成的頻率
                 const height = Math.floor(Math.random() * (canvas.height - obstacleGap));
                 obstacles.push({
                     x: canvas.width,
